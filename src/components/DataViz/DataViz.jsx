@@ -1,17 +1,41 @@
+/**
+ * components 
+ */
 import { DataVizHeader } from '../DataVizHeader/DataVizHeader';
 import { DataVizContent } from '../DataVizContent/DataVizContent';
+/**
+ * react imports
+ */
 import React, { useState, useEffect } from 'react';
+import { readString } from 'react-papaparse';
+/**
+ * csv files
+ */
 import csvFile from '../../core/data/gemini_BTCUSD_2020_1min.csv';
 import csvFile_1 from '../../core/data/gemini_BTCUSD_2020_1min copy.csv';
 import csvFile_2 from '../../core/data/gemini_BTCUSD_2020_1min copy 2.csv';
-import { readString } from 'react-papaparse';
 
+/**
+ * data visualizer component rendering the main components
+ */
 export function DataViz() {
+    /**
+     * state of the component 
+     * to select column for y axis
+     */
     const [selectedColumn, setSelectedColumn] = useState("Open");
+    /**
+     * state for the type of rendering of the chart
+     */
     const [chartType, setChartType] = useState("Line");
-
+    /**
+     * state for chart data
+     */
     const [csvData, setCsvData] = useState(null);
 
+    /**
+     * effect to parse the csv
+     */
     useEffect(() => {
         (function fetchData() {
             try {
@@ -32,11 +56,18 @@ export function DataViz() {
         })();
     },[]);
 
+    /**
+     * get the column of the csv to render the data
+     */
     function getColData(columnName = 'Date') {
         const row = csvData.data.map(row => row[columnName]);
         return row;
     }
 
+    /**
+     * option of the chart 
+     * to configure the chart
+     */
     const option = {
         xAxis: {
             type: 'category',
@@ -65,15 +96,15 @@ export function DataViz() {
 
 
     /**
-     * 
-     * @param {*} item 
+     * handler for y-axis 
+     * triggered after the event received from the child component
      */
     function handleVerticalAxis(item) {
         setSelectedColumn(item);
     }
     /**
-     * 
-     * @param {*} item 
+     * handler for the chart view type
+     * triggered after the event received from the child component
      */
     function handleChartView(item) {
         setChartType(item);
