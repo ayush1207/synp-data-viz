@@ -3,6 +3,7 @@ import { DataVizContent } from '../DataVizContent/DataVizContent';
 import React, { useState, useEffect } from 'react';
 import csvFile from '../../core/data/gemini_BTCUSD_2020_1min.csv';
 import csvFile_1 from '../../core/data/gemini_BTCUSD_2020_1min copy.csv';
+import csvFile_2 from '../../core/data/gemini_BTCUSD_2020_1min copy 2.csv';
 import { readString } from 'react-papaparse';
 
 export function DataViz() {
@@ -18,13 +19,12 @@ export function DataViz() {
                     complete: (results) => {
                         const columnName = selectedColumn ? selectedColumn : "Open";
                         const columnData = results.data.map(row => row[columnName]);
-                        console.log(columnData);
                         setCsvData(results);
                     },
                     download: true,
                     header: true,
                 };
-                readString(csvFile_1, papaConfig);
+                readString(csvFile_2, papaConfig);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -48,6 +48,12 @@ export function DataViz() {
         },
         yAxis: {
             type: 'value',
+            min: function (value) {
+                return value.min - 20;
+            },
+            max: function (value) {
+                return value.max + 20;
+            }
         },
         series: [
             {

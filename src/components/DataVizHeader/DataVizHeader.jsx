@@ -3,7 +3,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 
 
-export function DataVizHeader({ onSelectVerticalAxis, onSelectChartView, selectedColumnData, selectedChartType }) {
+export function DataVizHeader({ onSelectVerticalAxis, onSelectChartView, selectedChartType ,selectedColumnData }) {
     /**
      * 
      */
@@ -12,6 +12,9 @@ export function DataVizHeader({ onSelectVerticalAxis, onSelectChartView, selecte
      * 
      */
     const navData = ['Line', 'Bar'];
+
+    // let selectedColumnData = dropDownData[0];
+
 
     /**
      * 
@@ -28,7 +31,7 @@ export function DataVizHeader({ onSelectVerticalAxis, onSelectChartView, selecte
     return (
         <div className="d-flex justify-content-between">
             <div>
-                <DropdownButton id="dropdown-basic-button" title={selectedColumnData ? selectedColumnData : 'Please select'}>
+                <DropdownButton id="dropdown-basic-button" title={selectedColumnData ? selectedColumnData : dropDownData[0]}>
                     {dropDownData.map((item) => (
                         <Dropdown.Item
                             key={item}
@@ -38,6 +41,7 @@ export function DataVizHeader({ onSelectVerticalAxis, onSelectChartView, selecte
                     )}
                 </DropdownButton>
             </div>
+            {selectedColumnData}
             <div>
                 <Nav variant="pills" defaultActiveKey={selectedChartType ? selectedChartType : navData[0]} className='border rounded'>
                     {navData.map((item) => (
