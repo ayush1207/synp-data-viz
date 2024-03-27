@@ -7,8 +7,8 @@ import csvFile_2 from '../../core/data/gemini_BTCUSD_2020_1min copy 2.csv';
 import { readString } from 'react-papaparse';
 
 export function DataViz() {
-    const [selectedColumn, setSelectedColumn] = useState("");
-    const [chartType, setChartType] = useState("line");
+    const [selectedColumn, setSelectedColumn] = useState("Open");
+    const [chartType, setChartType] = useState("Line");
 
     const [csvData, setCsvData] = useState(null);
 
@@ -30,7 +30,7 @@ export function DataViz() {
                 console.error("Error fetching data:", error);
             }
         })();
-    }, []);
+    },[]);
 
     function getColData(columnName = 'Date') {
         const row = csvData.data.map(row => row[columnName]);
@@ -49,10 +49,10 @@ export function DataViz() {
         yAxis: {
             type: 'value',
             min: function (value) {
-                return value.min - 20;
+                return value.min - 100;
             },
             max: function (value) {
-                return value.max + 20;
+                return value.max + 100;
             }
         },
         series: [
@@ -80,13 +80,13 @@ export function DataViz() {
     }
 
     return (
-        <div className='container'>
-            <div class="my-4">
+        <div className=''>
+            <div class="mt-2 mb-5 border-bottom">
                 <DataVizHeader
                     onSelectVerticalAxis={handleVerticalAxis}
-                    onSelectChartView={handleChartView}>
+                    onSelectChartView={handleChartView}
                     selectedColumnData={selectedColumn}
-                    selectedChartType={chartType}
+                    selectedChartType={chartType}>
                 </DataVizHeader>
             </div>
             <div class="h-100">

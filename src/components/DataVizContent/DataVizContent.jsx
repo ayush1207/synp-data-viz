@@ -5,7 +5,7 @@ export function DataVizContent({ csvData, option }) {
     return (
         <div>
             {csvData ?
-                (<ReactECharts option={option}></ReactECharts>) :
+                (<ReactECharts option={option} style={{height: '600px' }}></ReactECharts>) :
                 (<p>Loading...</p>)}
         </div>
     )

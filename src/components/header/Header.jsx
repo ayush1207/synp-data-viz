@@ -1,5 +1,5 @@
 export default function Header() {
     return (
-        <h1 class="my-4">Time Series Data Visualization</h1>
+        <h1 class="mt-4 mb-2 border-bottom">Time Series Data Visualization</h1>
     );
 }

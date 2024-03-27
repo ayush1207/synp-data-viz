@@ -1,35 +1,43 @@
+/**
+ * bootstrap imports
+ */
 import Nav from 'react-bootstrap/Nav';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+/**
+ * constants imports
+ */
+import { DROPDOWN_DATA, GRAPH_TYPE } from '../../core/constants/app.constants';
 
-
+/**
+ * Data Visualizer Header
+ * Having all necessary toggles 
+ */
 export function DataVizHeader({ onSelectVerticalAxis, onSelectChartView, selectedChartType ,selectedColumnData }) {
     /**
-     * 
+     * dropdown data to be shown in 
      */
-    const dropDownData = ['Open', 'Close', 'High', 'Low', 'Volume'];
+    const dropDownData = DROPDOWN_DATA;
     /**
-     * 
+     * grah type
      */
-    const navData = ['Line', 'Bar'];
-
-    // let selectedColumnData = dropDownData[0];
-
+    const navData = GRAPH_TYPE;
 
     /**
-     * 
-     * @param {*} item 
+     * handle the dropdown and emit event to parent
      */
     function handleDropdownItemClick(item) {
         onSelectVerticalAxis(item);
     }
-
+    /**
+     * handle nav item click and emit event to parent 
+     */
     function handleNavItemClick(item) {
         onSelectChartView(item);
     }
 
     return (
-        <div className="d-flex justify-content-between">
+        <div className="container d-flex justify-content-between py-2">
             <div>
                 <DropdownButton id="dropdown-basic-button" title={selectedColumnData ? selectedColumnData : dropDownData[0]}>
                     {dropDownData.map((item) => (
@@ -41,7 +49,6 @@ export function DataVizHeader({ onSelectVerticalAxis, onSelectChartView, selecte
                     )}
                 </DropdownButton>
             </div>
-            {selectedColumnData}
             <div>
                 <Nav variant="pills" defaultActiveKey={selectedChartType ? selectedChartType : navData[0]} className='border rounded'>
                     {navData.map((item) => (
