@@ -66,13 +66,14 @@ export function DataViz() {
     }
 
 
+    /**
+     * function to get the average data of the month 
+     */
     async function chartTypeBarAverage() {
         if (chartType == 'Bar') {
             const coinsEarned = await getColData(selectedColumn ? selectedColumn : 'Open');
             const days = await getColData('Date');
             const monthlyData = {};
-
-            console.log(coinsEarned, days);
 
             if (coinsEarned && days) {
                 await days.forEach(async (date, index) => {
@@ -103,13 +104,17 @@ export function DataViz() {
      */
     async function getOption() {
         let chartTypeAverageData;
-        if(chartType == 'Bar')
+        if (chartType === 'Bar') {
             chartTypeAverageData = await chartTypeBarAverage();
-
+        }
+    
+        const xAxisData = csvData ? (chartType === 'Bar' && chartTypeAverageData ? chartTypeAverageData[0] : getColData('Date')) : [];
+        const seriesData = csvData ? (chartType === 'Bar' && chartTypeAverageData ? chartTypeAverageData[1] : getColData(selectedColumn || 'Open')) : [];
+    
         const option = {
             xAxis: {
                 type: 'category',
-                data: csvData ? (chartType == 'Bar' ? chartTypeAverageData[0] : getColData('Date')) : [],
+                data: xAxisData,
                 name: "Time",
                 nameLocation: 'center',
                 alignWithLabel: true
@@ -117,15 +122,15 @@ export function DataViz() {
             yAxis: {
                 type: 'value',
                 min: function (value) {
-                    return value.min - 100;
+                    return value.min - 10;
                 },
                 max: function (value) {
-                    return value.max + 100;
+                    return value.max + 10;
                 }
             },
             series: [
                 {
-                    data: csvData ? (chartType == 'Bar' ? chartTypeAverageData[1] : getColData(selectedColumn ?? selectedColumn)) : [],
+                    data: seriesData,
                     type: chartType ? chartType.toLowerCase() : 'line'
                 }
             ]
@@ -164,7 +169,7 @@ export function DataViz() {
                     selectedColumnData={selectedColumn}
                     selectedChartType={chartType}
                     csvData={csvData}
-                    option={() => getOption()}>
+                    option={getOption()}>
                 </DataVizContent>
             </div>
         </div>
