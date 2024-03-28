@@ -14,6 +14,7 @@ import { readString } from 'react-papaparse';
 import csvFile from '../../core/data/gemini_BTCUSD_2020_1min.csv';
 import csvFile_1 from '../../core/data/gemini_BTCUSD_2020_1min copy.csv';
 import csvFile_2 from '../../core/data/gemini_BTCUSD_2020_1min copy 2.csv';
+import csvFileMain from '../../core/data/gemini_BTCUSD_2020_1min_main.csv';
 
 /**
  * data visualizer component rendering the main components
@@ -41,20 +42,20 @@ export function DataViz() {
             try {
                 const papaConfig = {
                     complete: (results) => {
-                        const columnName = selectedColumn ? selectedColumn : "Open";
-                        const columnData = results.data.map(row => row[columnName]);
+                        const columnName = selectedColumn ?? selectedColumn;
+                        results.data.map(row => row[columnName]);
                         setCsvData(results);
                     },
                     download: true,
                     header: true,
                 };
-                readString(csvFile_2, papaConfig);
+                readString(csvFile_1, papaConfig);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         })();
-    },[]);
+    }, []);
 
     /**
      * get the column of the csv to render the data
@@ -64,35 +65,73 @@ export function DataViz() {
         return row;
     }
 
+
+    async function chartTypeBarAverage() {
+        if (chartType == 'Bar') {
+            const coinsEarned = await getColData(selectedColumn ? selectedColumn : 'Open');
+            const days = await getColData('Date');
+            const monthlyData = {};
+
+            console.log(coinsEarned, days);
+
+            if (coinsEarned && days) {
+                await days.forEach(async (date, index) => {
+                    if (date != null) {
+                        const splitDate = date.split('/');
+                        const monthYear = (splitDate[0] + '/' + splitDate[2].split(' ')[0]);
+                        monthlyData[monthYear] = monthlyData[monthYear] || { total: 0, count: 0 };
+                        monthlyData[monthYear].total += parseFloat(coinsEarned[index]);
+                        monthlyData[monthYear].count++;
+                    }
+                });
+
+                const monthlyAverages = Object.entries(monthlyData).map(([monthYear, { total, count }]) => ({
+                    monthYear,
+                    average: total / count
+                }));
+
+                const months = monthlyAverages.map(entry => entry.monthYear);
+                const averageValues = monthlyAverages.map(entry => entry.average)
+                return [months, averageValues];
+            }
+        }
+    }
+
     /**
      * option of the chart 
      * to configure the chart
      */
-    const option = {
-        xAxis: {
-            type: 'category',
-            formatter: '{dd}-{mm}-{yyyy} {hh}:{mm}',
-            data: csvData ? getColData('Date') : [],
-            name: "Time",
-            nameLocation: 'center',
-            alignWithLabel: true
-        },
-        yAxis: {
-            type: 'value',
-            min: function (value) {
-                return value.min - 100;
+    async function getOption() {
+        let chartTypeAverageData;
+        if(chartType == 'Bar')
+            chartTypeAverageData = await chartTypeBarAverage();
+
+        const option = {
+            xAxis: {
+                type: 'category',
+                data: csvData ? (chartType == 'Bar' ? chartTypeAverageData[0] : getColData('Date')) : [],
+                name: "Time",
+                nameLocation: 'center',
+                alignWithLabel: true
             },
-            max: function (value) {
-                return value.max + 100;
-            }
-        },
-        series: [
-            {
-                data: csvData ? getColData(selectedColumn ? selectedColumn : 'Open') : [],
-                type: chartType ? chartType.toLowerCase() : 'line'
-            }
-        ]
-    };
+            yAxis: {
+                type: 'value',
+                min: function (value) {
+                    return value.min - 100;
+                },
+                max: function (value) {
+                    return value.max + 100;
+                }
+            },
+            series: [
+                {
+                    data: csvData ? (chartType == 'Bar' ? chartTypeAverageData[1] : getColData(selectedColumn ?? selectedColumn)) : [],
+                    type: chartType ? chartType.toLowerCase() : 'line'
+                }
+            ]
+        };
+        return option;
+    }
 
 
     /**
@@ -125,7 +164,7 @@ export function DataViz() {
                     selectedColumnData={selectedColumn}
                     selectedChartType={chartType}
                     csvData={csvData}
-                    option={option}>
+                    option={() => getOption()}>
                 </DataVizContent>
             </div>
         </div>
